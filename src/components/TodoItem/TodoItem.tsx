@@ -8,6 +8,7 @@ type Props = {
   updateChecked: (todo: Todo) => void;
   deleteTodo: (id: number) => void;
   updateTodoTitle: (id: number, title: string) => Promise<void>;
+  onError?: (message: string) => void;
   isLoading?: boolean;
 };
 
@@ -17,13 +18,20 @@ export const TodoItem = ({
   deleteTodo,
   isLoading = false,
   updateTodoTitle,
+  onError,
 }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(todo.title);
   const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-
+  const isCancellingRef = useRef(false);
   const handleSaveTitle = async () => {
+    if (isSaving || isCancellingRef.current) {
+      isCancellingRef.current = false;
+
+      return;
+    }
+
     const normalizedTitle = editTitle.trim();
 
     if (normalizedTitle === todo.title) {
@@ -41,11 +49,13 @@ export const TodoItem = ({
     setIsSaving(true);
     try {
       await updateTodoTitle(todo.id, normalizedTitle);
-
       setIsEditing(false);
-    } catch {
-      setIsEditing(true);
+    } catch (error) {
+      if (error instanceof Error) {
+        onError?.(error.message);
+      }
 
+      setIsEditing(true);
       setTimeout(() => {
         inputRef.current?.focus();
       }, 0);
@@ -61,6 +71,7 @@ export const TodoItem = ({
     }
 
     if (e.key === 'Escape') {
+      isCancellingRef.current = true;
       setIsEditing(false);
     }
   };
@@ -77,7 +88,6 @@ export const TodoItem = ({
           disabled={isLoading || isSaving}
         />
       </label>
-
       {isEditing ? (
         <input
           ref={inputRef}
@@ -87,6 +97,7 @@ export const TodoItem = ({
           value={editTitle}
           onChange={event => setEditTitle(event.target.value)}
           onKeyDown={handleKeyDown}
+          onBlur={handleSaveTitle}
           disabled={isSaving}
           autoFocus
         />
@@ -99,7 +110,6 @@ export const TodoItem = ({
           {todo.title}
         </span>
       )}
-
       {!isEditing && (
         <button
           type="button"
@@ -111,7 +121,6 @@ export const TodoItem = ({
           ×
         </button>
       )}
-
       <div
         data-cy="TodoLoader"
         className={`modal overlay ${isLoading || isSaving ? 'is-active' : ''}`}

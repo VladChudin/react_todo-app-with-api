@@ -136,16 +136,6 @@ export const App: React.FC = () => {
     return true;
   });
 
-  const handleUpdateTodoTitle = async (id: number, title: string) => {
-    try {
-      await updateTodoTitle(id, title);
-    } catch (error) {
-      if (error instanceof Error) {
-        setErrorMessage(error.message);
-      }
-    }
-  };
-
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
@@ -185,17 +175,18 @@ export const App: React.FC = () => {
               updateChecked={() => handleUpdateChecked(todo)}
               deleteTodo={() => handleDeleteTodo(todo.id)}
               isLoading={loadingIds.includes(todo.id)}
-              updateTodoTitle={handleUpdateTodoTitle}
+              updateTodoTitle={updateTodoTitle}
+              onError={setErrorMessage}
             />
           ))}
-
           {tempTodo && (
             <TodoItem
               todo={tempTodo}
               updateChecked={() => {}}
               deleteTodo={() => {}}
               isLoading={true}
-              updateTodoTitle={handleUpdateTodoTitle}
+              updateTodoTitle={updateTodoTitle}
+              onError={setErrorMessage}
             />
           )}
         </section>
