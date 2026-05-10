@@ -1,4 +1,5 @@
 import { Todo } from '../../types/Todo';
+import classNames from 'classnames';
 
 type Props = {
   todos: Todo[];
@@ -6,6 +7,13 @@ type Props = {
   changeFilter: (newFilter: string) => void;
   filter: string;
 };
+
+enum FilterType {
+  all = 'all',
+  active = 'active',
+  completed = 'completed',
+  selected = 'selected',
+}
 
 export const Footer = ({
   todos,
@@ -26,27 +34,33 @@ export const Footer = ({
         <nav className="filter" data-cy="Filter">
           <a
             href="#/"
-            className={`filter__link ${filter === 'all' ? 'selected' : ''}`}
+            className={classNames('filter__link', {
+              selected: filter === FilterType.all,
+            })}
             data-cy="FilterLinkAll"
-            onClick={() => changeFilter('all')}
+            onClick={() => changeFilter(FilterType.all)}
           >
             All
           </a>
 
           <a
             href="#/active"
-            className={`filter__link ${filter === 'active' ? 'selected' : ''}`}
+            className={classNames('filter__link', {
+              selected: filter === FilterType.active,
+            })}
             data-cy="FilterLinkActive"
-            onClick={() => changeFilter('active')}
+            onClick={() => changeFilter(FilterType.active)}
           >
             Active
           </a>
 
           <a
             href="#/completed"
-            className={`filter__link ${filter === 'completed' ? 'selected' : ''}`}
+            className={classNames('filter__link', {
+              selected: filter === FilterType.completed,
+            })}
             data-cy="FilterLinkCompleted"
-            onClick={() => changeFilter('completed')}
+            onClick={() => changeFilter(FilterType.completed)}
           >
             Completed
           </a>

@@ -1,7 +1,8 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Todo } from '../../types/Todo';
+import classNames from 'classnames';
 
 type Props = {
   todo: Todo;
@@ -25,6 +26,11 @@ export const TodoItem = ({
   const [isSaving, setIsSaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const isCancellingRef = useRef(false);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
   const handleSaveTitle = async () => {
     if (isSaving || isCancellingRef.current) {
       isCancellingRef.current = false;
@@ -77,7 +83,12 @@ export const TodoItem = ({
   };
 
   return (
-    <div data-cy="Todo" className={`todo ${todo.completed ? 'completed' : ''}`}>
+    <div
+      data-cy="Todo"
+      className={classNames('todo', {
+        completed: todo.completed,
+      })}
+    >
       <label className="todo__status-label">
         <input
           data-cy="TodoStatus"
@@ -123,7 +134,9 @@ export const TodoItem = ({
       )}
       <div
         data-cy="TodoLoader"
-        className={`modal overlay ${isLoading || isSaving ? 'is-active' : ''}`}
+        className={classNames('modal', 'overlay', {
+          'is-active': isLoading || isSaving,
+        })}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />

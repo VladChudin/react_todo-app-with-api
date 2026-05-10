@@ -88,12 +88,14 @@ export const useTodos = () => {
   };
 
   const handleToggleAll = async () => {
+    const areAllCompleted = todos.every(todo => todo.completed);
+    const newStatus = !areAllCompleted;
+
+    const todosToUpdate = todos.filter(todo => todo.completed !== newStatus);
+    const idsToUpdate = todosToUpdate.map(todo => todo.id);
+
+    setLoadingIds(prev => [...prev, ...idsToUpdate]);
     try {
-      const areAllCompleted = todos.every(todo => todo.completed);
-      const newStatus = !areAllCompleted;
-
-      const todosToUpdate = todos.filter(todo => todo.completed !== newStatus);
-
       const updatePromises = todosToUpdate.map(todo =>
         patchTodos(todo.id, { completed: newStatus }),
       );
@@ -109,15 +111,18 @@ export const useTodos = () => {
       );
     } catch (error) {
       throw new Error(ErrorMessage.UPDATE);
+    } finally {
+      setLoadingIds(prev => prev.filter(id => !idsToUpdate.includes(id)));
     }
   };
 
   const clearCompleted = async () => {
     setIsClearing(true);
+    const completedTodos = todos.filter(todo => todo.completed);
+    const loadingIdsToClear = completedTodos.map(todo => todo.id);
 
+    setLoadingIds(prev => [...prev, ...loadingIdsToClear]);
     try {
-      const completedTodos = todos.filter(todo => todo.completed);
-
       const results = await Promise.allSettled(
         completedTodos.map(todo => deleteTodos(todo.id)),
       );
@@ -139,6 +144,7 @@ export const useTodos = () => {
       throw new Error(ErrorMessage.DELETE);
     } finally {
       setIsClearing(false);
+      setLoadingIds(prev => prev.filter(id => !loadingIdsToClear.includes(id)));
     }
   };
 

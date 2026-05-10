@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
+import classNames from 'classnames';
 import { useErrorMessage } from './hooks/ErrorMessage';
 import { useTodos } from './hooks/useTodos';
 import { UserWarning } from './UserWarning';
@@ -146,7 +147,9 @@ export const App: React.FC = () => {
           {todos.length > 0 && (
             <button
               type="button"
-              className={`todoapp__toggle-all ${areAllCompleted ? 'active' : ''}`}
+              className={classNames('todoapp__toggle-all', {
+                active: areAllCompleted,
+              })}
               data-cy="ToggleAllButton"
               onClick={handleToggleAllButton}
             />
@@ -204,7 +207,15 @@ export const App: React.FC = () => {
       {/* Add the 'hidden' class to hide the message smoothly */}
       <div
         data-cy="ErrorNotification"
-        className={`${errorMessage ? '' : 'hidden'} notification is-danger is-light has-text-weight-normal`}
+        className={classNames(
+          'notification',
+          'is-danger',
+          'is-light',
+          'has-text-weight-normal',
+          {
+            hidden: !errorMessage,
+          },
+        )}
       >
         <button
           data-cy="HideErrorButton"
