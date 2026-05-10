@@ -1,19 +1,13 @@
 import { Todo } from '../../types/Todo';
-import classNames from 'classnames';
+import { FilterType } from '../../types/Filter';
+import { FooterNav } from '../FooterNav/FooterNav';
 
 type Props = {
   todos: Todo[];
   clearCompleted: () => void;
-  changeFilter: (newFilter: string) => void;
-  filter: string;
+  changeFilter: (newFilter: FilterType) => void;
+  filter: FilterType;
 };
-
-enum FilterType {
-  all = 'all',
-  active = 'active',
-  completed = 'completed',
-  selected = 'selected',
-}
 
 export const Footer = ({
   todos,
@@ -30,41 +24,7 @@ export const Footer = ({
           {`${activeCount} items left`}
         </span>
 
-        {/* Active link should have the 'selected' class */}
-        <nav className="filter" data-cy="Filter">
-          <a
-            href="#/"
-            className={classNames('filter__link', {
-              selected: filter === FilterType.all,
-            })}
-            data-cy="FilterLinkAll"
-            onClick={() => changeFilter(FilterType.all)}
-          >
-            All
-          </a>
-
-          <a
-            href="#/active"
-            className={classNames('filter__link', {
-              selected: filter === FilterType.active,
-            })}
-            data-cy="FilterLinkActive"
-            onClick={() => changeFilter(FilterType.active)}
-          >
-            Active
-          </a>
-
-          <a
-            href="#/completed"
-            className={classNames('filter__link', {
-              selected: filter === FilterType.completed,
-            })}
-            data-cy="FilterLinkCompleted"
-            onClick={() => changeFilter(FilterType.completed)}
-          >
-            Completed
-          </a>
-        </nav>
+        <FooterNav changeFilter={changeFilter} filter={filter} />
 
         <button
           type="button"

@@ -9,6 +9,7 @@ import { USER_ID } from './api/todos';
 import { TodoItem } from './components/TodoItem/TodoItem';
 import { Footer } from './components/Footer/Footer';
 import { Todo } from './types/Todo';
+import { FilterType } from './types/Filter';
 
 export const App: React.FC = () => {
   const {
@@ -26,8 +27,8 @@ export const App: React.FC = () => {
     updateTodoTitle,
   } = useTodos();
   const [fieldValue, setFieldValue] = useState('');
-  const [filter, setFilter] = useState('all');
   const [errorMessage, setErrorMessage] = useErrorMessage();
+  const [filter, setFilter] = useState<FilterType>(FilterType.all);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -121,16 +122,16 @@ export const App: React.FC = () => {
     }
   };
 
-  const changeFilter = (newFilter: string) => {
+  const changeFilter = (newFilter: FilterType) => {
     setFilter(newFilter);
   };
 
   const visibleTodos = todos.filter(todo => {
-    if (filter === 'active') {
+    if (filter === FilterType.active) {
       return !todo.completed;
     }
 
-    if (filter === 'completed') {
+    if (filter === FilterType.completed) {
       return todo.completed;
     }
 
